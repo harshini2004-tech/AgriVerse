@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer To Buyer</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    
+    <style>
+        body {
+            padding-top: 50px;
+        }
+        .product, .search-result {
+            margin-bottom: 20px;
+        }
+        .cart-table th, .cart-table td {
+            text-align: center;
+        }
+        .total {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .navbar {
+            margin-bottom: 20px;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px 0;
+            text-align: center;
+        }
+        .creative-banner {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="#">Farmer To Buyer</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Home</a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0" id="search-form">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" id="search-input">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+    </div>
+</nav>
+<div class="creative-banner">
+    <h1>Welcome to Farmer To Buyer!</h1>
+    <p>Get fresh produce directly from farmers to your doorstep.</p>
+</div>
+<div class="container">
+    <h1 class="mt-4">Farmer To Buyer</h1>
+    <!-- Category Tabs -->
+    <ul class="nav nav-tabs" id="categoryTabs">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#vegetables">Vegetables</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#fruits">Fruits</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#leafy-vegetables">Leafy Vegetables</a>
+        </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div class="tab-pane container active" id="vegetables">
+            <h2>Vegetables</h2>
+            <div class="row" id="vegetable-list">
+                <!-- Vegetable products will be dynamically inserted here -->
+            </div>
+        </div>
+        <div class="tab-pane container fade" id="fruits">
+            <h2>Fruits</h2>
+            <div class="row" id="fruit-list">
+                <!-- Fruit products will be dynamically inserted here -->
+            </div>
+        </div>
+        <div class="tab-pane container fade" id="leafy-vegetables">
+            <h2>Leafy Vegetables</h2>
+            <div class="row" id="leafy-vegetable-list">
+                <!-- Leafy Vegetable products will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Results -->
+    <div id="search-results" style="display: none;">
+        <h2>Search Results</h2>
+        <div class="row" id="search-result-list">
+            <!-- Search results will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <!-- Your Cart -->
+    <h2>Your Cart</h2>
+    <table class="table table-bordered cart-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price per kg/bunch</th>
+                <th>Total Price</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="cart-contents">
+            <!-- Cart items will be dynamically inserted here -->
+        </tbody>
+    </table>
+
+    <!-- Total -->
+    <div class="total">
+        Total: <span id="cart-total">&#8377; 0</span>
+    </div>
+
+    <!-- Empty Cart Button -->
+    <button class="btn btn-primary" id="empty-cart">Empty Cart</button>
+
+    <!-- Place Order button -->
+    <button class="btn btn-success" id="place-order">Place Order</button>
+</div>
+<!-- Address Modal -->
+<div class="modal fade" id="addressModal" tabindex="-1" role="dialog" aria-labelledby="addressModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addressModalLabel">Enter Your Address</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="address-form">
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" class="form-control" id="address" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Payment Method Section -->
+<div class="container" id="payment-method" style="display: none;">
+    <h2>Payment Method</h2>
+    <p>Currently, only cash on delivery is available.</p>
+    <button class="btn btn-primary" id="confirm-order">Confirm Order</button>
+</div>
+<!-- Modal for updating product price -->
+<div class="modal fade" id="updatePriceModal" tabindex="-1" role="dialog" aria-labelledby="updatePriceModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updatePriceModalLabel">Update Product Price</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="update-price-form">
+                    <div class="form-group">
+                        <label for="new-price">New Price</label>
+                        <input type="number" class="form-control" id="new-price" required>
+                    </div>
+                    <input type="hidden" id="update-product-id">
+                    <button type="submit" class="btn btn-primary">Update Price</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Success Modal -->
+<div class="modal fade" id="orderSuccessModal" tabindex="-1" role="dialog" aria-labelledby="orderSuccessModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderSuccessModalLabel">Order Placed Successfully!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Thank you for placing your order. It will be delivered to you soon.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="footer">
+    <p>&copy; 2023 Farmer To Buyer. All Rights Reserved.</p>
+</footer>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function() {
+        let products = [
+            { id: 1, name: 'Carrots', category: 'Vegetables', price: 30, farmer: 'Farmer D' },
+            { id: 2, name: 'Apples', category: 'Fruits', price: 50, farmer: 'Farmer A' },
+            { id: 3, name: 'Oranges', category: 'Fruits', price: 60, farmer: 'Farmer B' },
+            { id: 4, name: 'Spinach', category: 'Leafy Vegetables', price: 25, farmer: 'Farmer E' },
+            { id: 5, name: 'Bananas', category: 'Fruits', price: 40, farmer: 'Farmer C' },
+            { id: 6, name: 'Potatoes', category: 'Vegetables', price: 20, farmer: 'Farmer E' },
+            // Additional vegetables
+            { id: 7, name: 'Tomatoes', category: 'Vegetables', price: 35, farmer: 'Farmer F' },
+            { id: 8, name: 'Bell Peppers', category: 'Vegetables', price: 45, farmer: 'Farmer G' },
+            { id: 9, name: 'Cucumbers', category: 'Vegetables', price: 25, farmer: 'Farmer H' },
+            // Additional fruits
+            { id: 10, name: 'Grapes', category: 'Fruits', price: 70, farmer: 'Farmer I' },
+            { id: 11, name: 'Pineapples', category: 'Fruits', price: 80, farmer: 'Farmer J' },
+            { id: 12, name: 'Mangoes', category: 'Fruits', price: 55, farmer: 'Farmer K' },
+            // Additional leafy vegetables
+            { id: 13, name: 'Kale', category: 'Leafy Vegetables', price: 30, farmer: 'Farmer L' },
+            { id: 14, name: 'Lettuce', category: 'Leafy Vegetables', price: 20, farmer: 'Farmer M' },
+            { id: 15, name: 'Cabbage', category: 'Leafy Vegetables', price: 25, farmer: 'Farmer N' }
+        ];
+        const cartName = 'farmCart';
+        const currency = '&#8377;'; // Indian Rupee symbol
+        let deliveryAddress = '';
+
+        function loadProductsByCategory(category, containerId) {
+            let filteredProducts = products.filter(product => product.category === category);
+            $('#' + containerId).empty();
+            filteredProducts.forEach(product => {
+                $('#' + containerId).append(`
+                    <div class="col-md-4 product">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">${product.name}</h5>
+                                <p class="card-text">${currency} ${product.price} per ${product.unit}</p>
+                                <p class="card-text"><strong>Farmer:</strong> ${product.farmer}</p>
+                                <button class="btn btn-primary add-to-cart" data-id="${product.id}" data-name="${product.name}" data-price="${product.price}" data-unit="${product.unit}">Add to Cart</button>
+                                <button class="btn btn-secondary update-price" data-id="${product.id}" data-name="${product.name}" data-price="${product.price}">Update Price</button>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        loadProductsByCategory('Vegetables', 'vegetable-list');
+        loadProductsByCategory('Fruits', 'fruit-list');
+        loadProductsByCategory('Leafy Vegetables', 'leafy-vegetable-list');
+
+        $(document).on('click', '.add-to-cart', function() {
+            let id = $(this).data('id');
+            let name = $(this).data('name');
+            let price = $(this).data('price');
+            let unit = $(this).data('unit');
+            let qty = prompt("Enter quantity in " + unit + ":", "1");
+            if (qty != null && qty > 0) {
+                let cart = JSON.parse(localStorage.getItem(cartName)) || [];
+                let existingProduct = cart.find(item => item.id === id);
+                if (existingProduct) {
+                    existingProduct.qty += parseInt(qty);
+                } else {
+                    cart.push({ id, name, price, qty: parseInt(qty) });
+                }
+                localStorage.setItem(cartName, JSON.stringify(cart));
+                loadCart();
+            }
+        });
+
+        $(document).on('click', '.update-price', function() {
+            let id = $(this).data('id');
+            let name = $(this).data('name');
+            let price = $(this).data('price');
+            $('#update-product-id').val(id);
+            $('#new-price').val(price);
+            $('#updatePriceModalLabel').text("Update Price for " + name);
+            $('#updatePriceModal').modal('show');
+        });
+
+        $('#update-price-form').submit(function(e) {
+            e.preventDefault();
+            let id = $('#update-product-id').val();
+            let newPrice = $('#new-price').val();
+            products = products.map(product => {
+                if (product.id == id) {
+                    product.price = newPrice;
+                }
+                return product;
+            });
+            
+            $('.product[data-id="' + id + '"] .card-body .card-text').eq(0).text(currency + ' ' + newPrice);
+            $('#updatePriceModal').modal('hide');
+            
+        });
+
+        // Load cart on page load
+        loadCart();
+
+        // Load cart function
+        function loadCart() {
+            let cart = JSON.parse(localStorage.getItem(cartName)) || [];
+            $('#cart-contents').empty();
+            let total = 0;
+            cart.forEach(item => {
+                let totalPrice = item.price * item.qty;
+                total += totalPrice;
+                $('#cart-contents').append(`
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.qty}</td>
+                        <td>${currency} ${item.price}</td>
+                        <td>${currency} ${totalPrice}</td>
+                        <td><button class="btn btn-danger remove-item" data-id="${item.id}">Remove</button></td>
+                    </tr>
+                `);
+            });
+            $('#cart-total').text(currency + ' ' + total);
+        }
+
+        // Remove item from cart
+        $(document).on('click', '.remove-item', function() {
+            let id = $(this).data('id');
+            let cart = JSON.parse(localStorage.getItem(cartName)) || [];
+            let updatedCart = cart.filter(item => item.id !== id);
+            localStorage.setItem(cartName, JSON.stringify(updatedCart));
+            loadCart();
+        });
+
+        // Place order button click
+        $('#place-order').click(function() {
+            $('#addressModal').modal('show');
+        });
+
+        // Address form submission
+        $('#address-form').submit(function(e) {
+            e.preventDefault();
+            deliveryAddress = $('#address').val();
+            $('#addressModal').modal('hide');
+            $('#payment-method').show();
+        });
+
+        // Confirm order button click
+        $('#confirm-order').click(function() {
+            // For demonstration, we assume payment is successful
+            // In a real application, you would handle payment processing here
+            // and proceed accordingly based on the payment status
+            $('#orderSuccessModal').modal('show');
+        });
+
+        // Rest of the code...
+    });
+</script>
+</body>
+</html>

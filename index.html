@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agriculture Chatbot</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .chat-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .chat-container p {
+            margin: 10px 0;
+        }
+        .user-message {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h2>Welcome to the Agriculture Chatbot</h2>
+        <div id="chat-box"></div>
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        const responses = {
+            "greetings": [
+                "Hello! How can I assist you with agriculture today?",
+                "Hi there! What do you need help with in your farming?",
+                "Greetings! How can I help you with your agriculture-related questions?"
+            ],
+            "crop_selection": [
+                "You should consider growing crops like wheat, rice, or maize.",
+                "Consider growing high-value crops like tomatoes, peppers, or strawberries.",
+                "You might want to grow crops that are well-suited to your region's climate, such as barley, sunflower, or soybeans.",
+                "Corn and potatoes are also great options depending on your soil type.",
+                "Herbs like basil, mint, and oregano can be profitable and easy to grow."
+            ],
+            "pest_management": [
+                "To manage pests, you can use organic methods like crop rotation, companion planting, and biological control.",
+                "Consider using integrated pest management techniques, which combine biological, cultural, and chemical methods.",
+                "Using natural predators or parasites to control pests can be effective in some cases.",
+                "Neem oil and insecticidal soaps are natural pesticides that can help control pests.",
+                "Regularly inspect your plants for early signs of pest infestations to take timely action."
+            ],
+            "soil_management": [
+                "To improve soil health, consider practices like cover cropping, composting, and minimal tillage.",
+                "Soil testing can help you understand nutrient levels and pH balance, allowing you to tailor your soil management practices.",
+                "Adding organic matter like compost or manure can enhance soil fertility and structure.",
+                "Using mulch helps prevent soil erosion and maintains soil moisture.",
+                "Rotating crops each season can help maintain soil health and reduce pest buildup."
+            ],
+            "water_management": [
+                "Efficient irrigation methods like drip irrigation or micro-sprinklers can help conserve water.",
+                "Consider installing rainwater harvesting systems to capture and store rainwater for irrigation.",
+                "Using mulch can reduce evaporation and help retain soil moisture.",
+                "Scheduling irrigation during the early morning or late evening reduces water loss due to evaporation.",
+                "Collecting and reusing greywater from households can be an additional water source for irrigation."
+            ],
+            "fruit_selection": [
+                "Consider growing fruits like apples, oranges, and bananas.",
+                "Berries like strawberries, blueberries, and raspberries are popular and nutritious.",
+                "Tropical fruits such as mangoes, pineapples, and papayas can be very rewarding.",
+                "Grapes, both table and wine varieties, can be a great choice depending on your region.",
+                "Citrus fruits like lemons, limes, and grapefruits are always in demand."
+            ],
+            "farewell": [
+                "Thank you for chatting with the agriculture chatbot. Goodbye!",
+                "Have a great day! If you have more questions, feel free to come back anytime.",
+                "It was a pleasure assisting you. Have a wonderful day!",
+                "Goodbye! Hope you have a bountiful harvest!",
+                "Farewell! Remember to keep your soil healthy and crops happy!"
+            ],
+            "definition": {
+                "crop": "A crop is a plant that is cultivated or grown on a large scale for food, fiber, or other economic purposes.",
+                "pest": "A pest is any organism that can be harmful or destructive to crops, livestock, or humans, such as insects, weeds, or diseases.",
+                "soil": "Soil is the upper layer of earth in which plants grow, a black or dark brown material typically consisting of a mixture of organic matter, clay, and rock particles.",
+                "irrigation": "Irrigation is the artificial application of water to land or soil to assist in the production of crops.",
+                "compost": "Compost is organic matter that has been decomposed and recycled as a fertilizer and soil amendment.",
+                "fertilizer": "Fertilizer is any material added to soil or plants to supply one or more plant nutrients essential to the growth of plants.",
+                "crop rotation": "Crop rotation is the practice of growing a series of dissimilar or different types of crops in the same area in sequenced seasons.",
+                "companion planting": "Companion planting is the practice of growing different plants together in the same space for mutual benefit.",
+                "biological control": "Biological control is a method of controlling pests such as insects, mites, weeds, and plant diseases using other organisms.",
+                "cover cropping": "Cover cropping is the practice of planting crops that cover the soil rather than leaving it bare.",
+                "minimal tillage": "Minimal tillage is a conservation farming practice where the soil is disturbed as little as possible during planting and cultivation.",
+                "mulch": "Mulch is a layer of material applied to the surface of soil to conserve moisture, suppress weeds, and improve soil fertility.",
+                "greywater": "Greywater is wastewater generated from domestic activities such as laundry, dishwashing, and bathing, excluding toilet wastes."
+            },
+            "fertilizer_types": [
+                "Types of fertilizers:",
+                "- Nitrogen-based fertilizers",
+                "- Phosphorus-based fertilizers",
+                "- Potassium-based fertilizers",
+                "- Organic fertilizers (e.g., compost, manure)",
+                "- Slow-release fertilizers",
+                "- Liquid fertilizers"
+            ],
+            "pesticide_types": [
+                "Types of pesticides:",
+                "- Insecticides (for controlling insects)",
+                "- Herbicides (for controlling weeds)",
+                "- Fungicides (for controlling fungal diseases)",
+                "- Rodenticides (for controlling rodents)",
+                "- Nematicides (for controlling nematodes)",
+                "- Molluscicides (for controlling mollusks)"
+            ],
+            "default": [
+                "I'm sorry, I didn't understand that. Can you please ask your question in a different way?",
+                "I'm not sure how to answer that. Could you provide more details?",
+                "I'm still learning! Could you rephrase your question?",
+                "Can you clarify your question? I'm here to help with agriculture-related queries.",
+                "I'm not sure I got that. Could you try asking in a different way?"
+            ]
+        };
+
+        const keywords = {
+            "greetings": ["hi", "hello", "hey", "greetings"],
+            "crop_selection": ["crop", "crops", "plant", "plants", "grow"],
+            "pest_management": ["pest", "pests", "insect", "insects", "bug", "bugs"],
+            "soil_management": ["soil", "fertility", "compost", "manure"],
+            "water_management": ["water", "irrigation", "rain", "moisture"],
+            "fruit_selection": ["fruit", "fruits", "apple", "banana", "orange", "berry", "berries"],
+            "farewell": ["bye", "goodbye", "see you", "farewell", "quit"],
+            "definition": ["define", "definition", "what is"],
+            "fertilizer_types": ["fertilizer", "fertilizers", "nutrients", "types"],
+            "pesticide_types": ["pesticide", "pesticides", "insecticide", "herbicide", "fungicide", "rodenticide", "nematicide", "molluscicide", "types"]
+        };
+
+        function sendMessage() {
+            const userInput = document.getElementById('user-input').value;
+            const chatBox = document.getElementById('chat-box');
+
+            // Display user message
+            const userMessageElement = document.createElement('p');
+            userMessageElement.textContent = `You: ${userInput}`;
+            userMessageElement.classList.add('user-message');
+            chatBox.appendChild(userMessageElement);
+
+            // Generate bot response
+            const botResponse = generateBotResponse(userInput);
+
+            // Display bot response
+            const botMessageElement = document.createElement('p');
+            botMessageElement.textContent = `Bot: ${botResponse}`;
+            chatBox.appendChild(botMessageElement);
+
+            // Clear user input
+            document.getElementById('user-input').value = '';
+
+            // Scroll to the bottom of the chat box
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function generateBotResponse(userInput) {
+            for (const category in responses) {
+                if (keywords[category].some(keyword => userInput.includes(keyword))) {
+                    if (category === "definition") {
+                        const term = Object.keys(responses[category]).find(term => userInput.includes(term));
+                        if (term) {
+                            return responses[category][term];
+                        }
+                    } else if (category === "fertilizer_types" || category === "pesticide_types") {
+                        return responses[category].join("\n");
+                    } else {
+                        return responses[category][Math.floor(Math.random() * responses[category].length)];
+                    }
+                }
+            }
+            return responses["default"][Math.floor(Math.random() * responses["default"].length)];
+        }
+    </script>
+</body>
+</html>
